@@ -9,7 +9,6 @@ packages:
   - 'android-tools'
   - 'aria2'
   - 'base-devel'
-  - 'bitwarden'
   - 'bluez-utils'
   - 'btrfs-assistant'
   - 'clonezilla'
@@ -60,22 +59,16 @@ packages:
   - 'ttf-jetbrains-mono-nerd'
   - 'ufw'
   - 'unzip'
-  - 'wine'
-  - 'wine-gecko'
-  - 'wine-mono'
-  - 'winetricks'
   - 'wireplumber'
   - 'wl-clipboard'
   - 'wmctrl'
   - 'xclip'
   - 'xdotool'
   - 'xdg-desktop-portal-gnome'
-  - 'zenity'
   - 'zip'
   - 'zsh'
   - 'ananicy-cpp'
   - 'scx-scheds'
-  - 'ollama'
 
 aur-packages:
   - 'brave-origin-beta-bin'
@@ -89,6 +82,7 @@ aur-packages:
   - 'linux-cachyos'
   - 'linux-cachyos-headers'
   - 'cachyos-ananicy-rules'
+  - 'input-remapper-bin'
 
 services:
   - 'bluetooth'
