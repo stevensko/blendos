@@ -13,5 +13,6 @@ rm /usr/share/gnome-shell/gnome-shell-theme.gresource
 ln -sfn /etc/gdm-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
 ln -sfn /etc/gdm-shell/gnome-shell-theme.gresource.default /usr/share/gnome-shell/gnome-shell-theme.gresource.default
 
-# Keepass
+# Symlinks
+ln -sfn /usr/bin/micro /usr/bin/nano
 ln -sfn /home/user/.local/share/KeePass/Plugins /usr/share/keepass/plugins
