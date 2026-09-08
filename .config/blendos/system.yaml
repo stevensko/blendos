@@ -97,5 +97,4 @@ services:
   - 'ananicy-cpp'
 
 commands:
-  - 'ln -s ~/.local/share/KeePass/Plugins /usr/share/keepass/plugins'
-  - 'magick -size 1x1 xc:transparent /usr/share/plymouth/themes/spinner/watermark.png'
+  - 'bash ~/.config/blendos/blendos.sh'
