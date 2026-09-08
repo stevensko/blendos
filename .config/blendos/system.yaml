@@ -97,4 +97,4 @@ services:
   - 'ananicy-cpp'
 
 commands:
-  - 'bash ~/.config/blendos/blend.sh'
+  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/blendos/blend.sh | bash'

@@ -10,8 +10,8 @@ chmod u=rw,go=r /etc/gdm-shell/gnome-shell-theme.gresource
 cp /usr/share/gnome-shell/gnome-shell-theme.gresource /etc/gdm-shell/gnome-shell-theme.gresource.default
 chmod u=rw,go=r /etc/gdm-shell/gnome-shell-theme.gresource.default
 rm /usr/share/gnome-shell/gnome-shell-theme.gresource
-ln -s /etc/gdm-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
-ln -s /etc/gdm-shell/gnome-shell-theme.gresource.default /usr/share/gnome-shell/gnome-shell-theme.gresource.default
+ln -sfn /etc/gdm-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
+ln -sfn /etc/gdm-shell/gnome-shell-theme.gresource.default /usr/share/gnome-shell/gnome-shell-theme.gresource.default
 
 # Keepass
-ln -s ~/.local/share/KeePass/Plugins /usr/share/keepass/plugins
+ln -sfn /home/user/.local/share/KeePass/Plugins /usr/share/keepass/plugins
