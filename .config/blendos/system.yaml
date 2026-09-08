@@ -18,6 +18,7 @@ packages:
   - 'gdm'
   - 'ghostty'
   - 'git'
+  - 'glib2-devel'
   - 'gnome-browser-connector'
   - 'gnome-control-center'
   - 'gnome-keyring'
