@@ -11,7 +11,7 @@ cp /usr/share/gnome-shell/gnome-shell-theme.gresource /etc/gdm-shell/gnome-shell
 chmod u=rw,go=r /etc/gdm-shell/gnome-shell-theme.gresource
 cp /usr/share/gnome-shell/gnome-shell-theme.gresource /etc/gdm-shell/gnome-shell-theme.gresource.default
 chmod u=rw,go=r /etc/gdm-shell/gnome-shell-theme.gresource.default
-rm /usr/share/gnome-shell/gnome-shell-theme.gresource
+rm -f /usr/share/gnome-shell/gnome-shell-theme.gresource
 ln -sf /etc/gdm-shell/gnome-shell-theme.gresource /usr/share/gnome-shell/gnome-shell-theme.gresource
 ln -sf /etc/gdm-shell/gnome-shell-theme.gresource.default /usr/share/gnome-shell/gnome-shell-theme.gresource.default
 
