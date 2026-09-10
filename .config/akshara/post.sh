@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -uo pipefail
+
 # Plymouth
 magick -size 1x1 xc:transparent /usr/share/plymouth/themes/spinner/watermark.png
 
