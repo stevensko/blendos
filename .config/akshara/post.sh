@@ -16,3 +16,6 @@ ln -sf /etc/gdm-shell/gnome-shell-theme.gresource.default /usr/share/gnome-shell
 # Symlinks
 ln -sf /usr/bin/micro /usr/bin/nano
 ln -sf /home/user/.local/share/KeePass/Plugins /usr/share/keepass/plugins
+
+# Services
+systemctl enable bluetooth.service gdm.service ufw.service ananicy-cpp.service
