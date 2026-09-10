@@ -6,7 +6,7 @@ KEY='882DCFE48E2051D48E2562ABF3B607488DB35A47'
 BASE='https://mirror.cachyos.org/repo/x86_64/cachyos'
 CONF='https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/cachyos.conf'
 
-pick() {   # newest <pkgname>-<ver>-any.pkg.tar.zst on the mirror
+pick() {
     curl -fsSL "$BASE/" \
         | grep -oE "$1-[0-9][A-Za-z0-9._+-]*-any\.pkg\.tar\.zst" \
         | sort -V | tail -n1
@@ -23,8 +23,11 @@ pacman -U --noconfirm \
 
 curl -fsSL "$CONF" -o /etc/pacman.d/cachyos.conf
 
+[ -e /etc/pacman.conf.pacsave ] || cp -a /etc/pacman.conf /etc/pacman.conf.pacsave
+
+sed -i 's/^Architecture[[:space:]]*=.*/Architecture = x86_64 x86_64_v3/' /etc/pacman.conf
+
 if ! grep -qx 'Include = /etc/pacman.d/cachyos.conf' /etc/pacman.conf; then
-    cp -a /etc/pacman.conf /etc/pacman.conf.pacsave
     tmp=$(mktemp)
     awk '/^\[core\]/ && !done {
              print "Include = /etc/pacman.d/cachyos.conf"
