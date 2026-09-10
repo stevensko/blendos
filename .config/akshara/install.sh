@@ -2,7 +2,7 @@
 
 set -uo pipefail
 
-BIN=(
+ARCH=(
   adw-gtk-theme
   adwaita-icon-theme
   ananicy-cpp
@@ -86,7 +86,7 @@ AUR=(
   xdg-terminal-exec
 )
 
-pacman -Sy --needed --noconfirm --ask=4 "${BIN[@]}"
+pacman -Sy --needed --noconfirm --ask=4 "${ARCH[@]}"
 
 pacman -Qqn | pacman -S --noconfirm --ask=4 - || true
 
