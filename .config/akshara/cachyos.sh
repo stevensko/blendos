@@ -24,6 +24,7 @@ pacman -U --noconfirm \
 curl -fsSL "$CONF" -o /etc/pacman.d/cachyos.conf
 
 if ! grep -qx 'Include = /etc/pacman.d/cachyos.conf' /etc/pacman.conf; then
+    cp -a /etc/pacman.conf /etc/pacman.conf.pacsave
     tmp=$(mktemp)
     awk '/^\[core\]/ && !done {
              print "Include = /etc/pacman.d/cachyos.conf"
