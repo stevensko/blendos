@@ -92,4 +92,4 @@ services:
   - 'ananicy-cpp'
 
 commands:
-  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/blend-system/system.sh | bash'
+  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/post.sh | bash'
