@@ -86,9 +86,63 @@ AUR=(
   xdg-terminal-exec
 )
 
-pacman -Sy --needed --noconfirm --ask=4 "${ARCH[@]}"
+# pkgnames from `failed retrieving file '...'` lines on stdin (any arch suffix)
+__names() {
+    grep -oE "retrieving file '[^']+\.pkg\.tar\.zst(\.sig)?'" \
+      | sed -E "s/.*'([^']+)'.*/\1/" \
+      | while read -r f; do
+            f=${f%.sig}; f=${f%.pkg.tar.zst}
+            f=${f%-x86_64_v3}; f=${f%-x86_64}; f=${f%-any}
+            f=${f%-*}; printf '%s\n' "${f%-*}"
+        done | sort -u
+}
 
-pacman -Qqn | pacman -S --noconfirm --ask=4 - || true
+# Install/convert targets with a three-tier fallback per package:
+#   1. cachyos-v3 (priority in the default config)
+#   2. cachyos  (generic CachyOS x86_64 build) for anything whose v3 file 404s
+#   3. stock Arch [core]/[extra] for anything the generic repo lacks too
+# Retries to ride out transient CDN misses. Anything pulled from a lower tier
+# auto-upgrades to v3 on a later update once CachyOS publishes the file.
+prefer_v3() {
+    local pkgs=("$@") try out m2 m3 keep p generic arch
+    generic=$(mktemp); arch=$(mktemp)
+    printf '[cachyos]\nInclude = /etc/pacman.d/cachyos-mirrorlist\n' > /etc/pacman.d/cachyos-generic.conf
+    sed 's#cachyos\.conf#cachyos-generic.conf#' /etc/pacman.conf > "$generic"   # v3 out, generic in
+    sed '/cachyos/d'                            /etc/pacman.conf > "$arch"      # all cachyos out
+
+    for try in 1 2 3 4 5; do
+        [ "${#pkgs[@]}" -eq 0 ] && break
+        out=$(pacman -S --noconfirm --ask=4 "${pkgs[@]}" 2>&1) && { rm -f "$generic" "$arch"; return 0; }
+        printf '%s\n' "$out"
+
+        mapfile -t m2 < <(printf '%s\n' "$out" | __names)          # v3 404 -> generic
+        if [ "${#m2[@]}" -gt 0 ]; then
+            printf 'prefer_v3: not in v3, trying cachyos generic: %s\n' "${m2[*]}"
+            out=$(pacman -S --noconfirm --ask=4 --config "$generic" "${m2[@]}" 2>&1); printf '%s\n' "$out"
+            mapfile -t m3 < <(printf '%s\n' "$out" | __names)      # generic 404 too -> Arch
+            if [ "${#m3[@]}" -gt 0 ]; then
+                printf 'prefer_v3: not in cachyos generic either, taking from Arch: %s\n' "${m3[*]}"
+                pacman -S --noconfirm --ask=4 --config "$arch" "${m3[@]}" || true
+            fi
+            keep=()
+            for p in "${pkgs[@]}"; do
+                printf '%s\n' "${m2[@]}" | grep -qxF -- "$p" || keep+=("$p")
+            done
+            pkgs=("${keep[@]}")
+        fi
+        sleep 20
+    done
+
+    rm -f "$generic" "$arch"
+    [ "${#pkgs[@]}" -eq 0 ]
+}
+
+pacman -Sy
+
+prefer_v3 "${ARCH[@]}"
+
+mapfile -t base < <(pacman -Qqn)
+prefer_v3 "${base[@]}"
 
 pacman -Qq paru &>/dev/null && had_paru=1 || had_paru=0
 pacman -S --needed --noconfirm base-devel git sudo fakeroot paru
