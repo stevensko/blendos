@@ -2,91 +2,7 @@
 
 set -uo pipefail
 
-ARCH=(
-  adw-gtk-theme
-  adwaita-icon-theme
-  ananicy-cpp
-  android-tools
-  aria2
-  base-devel
-  bluez-utils
-  btrfs-assistant
-  cachyos-ananicy-rules
-  clonezilla
-  distrobox
-  dkms
-  flatpak
-  gdm
-  ghostty
-  git
-  glib2-devel
-  gnome-browser-connector
-  gnome-control-center
-  gnome-keyring
-  gnome-session
-  gnome-settings-daemon
-  gnome-shell
-  gnome-themes-extra
-  gpaste
-  gufw
-  gvfs
-  imagemagick
-  imwheel
-  iptables-nft
-  jellyfin-server
-  jellyfin-web
-  keepass
-  libinput-gestures
-  libsecret
-  linux-cachyos
-  linux-cachyos-headers
-  linux-cachyos-lts-lto
-  linux-cachyos-lts-lto-headers
-  mesa
-  mission-center
-  nautilus
-  networkmanager
-  noto-fonts-emoji
-  pipewire
-  pipewire-pulse
-  plymouth
-  podman
-  procps-ng
-  ptyxis
-  python-setuptools
-  qbittorrent
-  rclone
-  samba
-  scx-scheds
-  sushi
-  syncthing
-  systemdgenie
-  tailscale
-  toolbox
-  ttf-jetbrains-mono-nerd
-  ufw
-  unzip
-  wireplumber
-  wl-clipboard
-  wmctrl
-  xclip
-  xdg-desktop-portal-gnome
-  xdotool
-  zip
-  zsh
-)
-
-AUR=(
-  brave-origin-beta-bin
-  gnome-rounded-blur
-  grub-customizer
-  input-remapper-bin
-  jopdf
-  nautilus-copy-path
-  rabbitvcs-nautilus
-  vscodium-insiders-bin
-  xdg-terminal-exec
-)
+source /var/tmp/manifest.sh
 
 __names() {
     grep -oE "retrieving file '[^']+\.pkg\.tar\.zst(\.sig)?'" \
@@ -132,18 +48,6 @@ prefer_v3() {
     [ "${#pkgs[@]}" -eq 0 ]
 }
 
-pacman -Sy
-
-prefer_v3 "${ARCH[@]}"
-
-pacman -Rns --noconfirm linux-zen linux-zen-headers
-
-mapfile -t base < <(pacman -Qqn)
-prefer_v3 "${base[@]}"
-
-pacman -Qq paru &>/dev/null && had_paru=1 || had_paru=0
-pacman -S --needed --noconfirm base-devel git sudo fakeroot paru
-
 aur_paru() {
     local i rc=1
     for ((i = 1; i <= 30; i++)); do
@@ -158,9 +62,16 @@ aur_paru() {
     return "$rc"
 }
 
+pacman -Sy
+
+prefer_v3 "${ARCH[@]}"
+
 aur_paru -Sy --noconfirm --noprogressbar --removemake --skipreview --cleanafter --ask=4 --needed "${AUR[@]}"
 rc=$?
 
-[ "$had_paru" -eq 1 ] || pacman -Rns --noconfirm paru || true
+pacman -Rns --noconfirm linux-zen linux-zen-headers paru
+
+mapfile -t base < <(pacman -Qqn)
+prefer_v3 "${base[@]}"
 
 exit "$rc"
