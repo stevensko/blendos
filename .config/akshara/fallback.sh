@@ -1,9 +1,3 @@
-#!/bin/bash
-
-set -uo pipefail
-
-source /var/tmp/manifest.sh
-
 __names() {
     grep -oE "retrieving file '[^']+\.pkg\.tar\.zst(\.sig)?'" \
       | sed -E "s/.*'([^']+)'.*/\1/" \
@@ -14,7 +8,7 @@ __names() {
         done | sort -u
 }
 
-prefer_v3() {
+priority_v3() {
     local pkgs=("$@") try out m2 m3 keep p generic arch
     generic=$(mktemp); arch=$(mktemp)
     printf '[cachyos]\nInclude = /etc/pacman.d/cachyos-mirrorlist\n' > /etc/pacman.d/cachyos-generic.conf
@@ -28,11 +22,11 @@ prefer_v3() {
 
         mapfile -t m2 < <(printf '%s\n' "$out" | __names)
         if [ "${#m2[@]}" -gt 0 ]; then
-            printf 'prefer_v3: not in v3, trying cachyos generic: %s\n' "${m2[*]}"
+            printf 'priority_v3: not in v3, trying cachyos generic: %s\n' "${m2[*]}"
             out=$(pacman -S --noconfirm --ask=4 --config "$generic" "${m2[@]}" 2>&1); printf '%s\n' "$out"
             mapfile -t m3 < <(printf '%s\n' "$out" | __names)
             if [ "${#m3[@]}" -gt 0 ]; then
-                printf 'prefer_v3: not in cachyos generic either, taking from Arch: %s\n' "${m3[*]}"
+                printf 'priority_v3: not in cachyos generic either, taking from Arch: %s\n' "${m3[*]}"
                 pacman -S --noconfirm --ask=4 --config "$arch" "${m3[@]}" || true
             fi
             keep=()
@@ -47,31 +41,3 @@ prefer_v3() {
     rm -f "$generic" "$arch"
     [ "${#pkgs[@]}" -eq 0 ]
 }
-
-aur_paru() {
-    local i rc=1
-    for ((i = 1; i <= 30; i++)); do
-        useradd -m -G wheel -s /bin/bash aur
-        echo 'aur ALL=(ALL) NOPASSWD: ALL' > /etc/sudoers.d/aur
-        runuser -u aur -- paru "$@"
-        rc=$?
-        userdel -r aur 2>/dev/null
-        rm -f /etc/sudoers.d/aur
-        [ "$rc" -eq 0 ] && return 0
-    done
-    return "$rc"
-}
-
-pacman -Sy
-
-prefer_v3 "${ARCH[@]}"
-
-aur_paru -Sy --noconfirm --noprogressbar --removemake --skipreview --cleanafter --ask=4 --needed "${AUR[@]}"
-rc=$?
-
-pacman -Rns --noconfirm linux-zen linux-zen-headers paru
-
-mapfile -t base < <(pacman -Qqn)
-prefer_v3 "${base[@]}"
-
-exit "$rc"
