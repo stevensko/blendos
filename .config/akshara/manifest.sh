@@ -8,6 +8,7 @@ ARCH=(
   bluez-utils
   btrfs-assistant
   cachyos-ananicy-rules
+  cachyos-settings
   clonezilla
   distrobox
   dkms
@@ -54,7 +55,9 @@ ARCH=(
   qbittorrent
   rclone
   samba
+  scx-manager
   scx-scheds
+  scx-tools
   sushi
   syncthing
   systemdgenie
