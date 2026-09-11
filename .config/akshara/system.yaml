@@ -4,6 +4,6 @@ repo: https://pkg-repo.blendos.co
 track: blendos-base
 
 commands:
-  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/cachyos.sh | bash'
-  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/install.sh | bash'
+  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/repos.sh | bash'
+  - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/build.sh | bash'
   - 'curl -fsSL https://raw.githubusercontent.com/stevensko/blendos/main/.config/akshara/post.sh | bash'

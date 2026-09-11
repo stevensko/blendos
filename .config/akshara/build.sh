@@ -40,6 +40,8 @@ ARCH=(
   libsecret
   linux-cachyos
   linux-cachyos-headers
+  linux-cachyos-lts-lto
+  linux-cachyos-lts-lto-headers
   mesa
   mission-center
   nautilus
@@ -86,7 +88,6 @@ AUR=(
   xdg-terminal-exec
 )
 
-# pkgnames from `failed retrieving file '...'` lines on stdin (any arch suffix)
 __names() {
     grep -oE "retrieving file '[^']+\.pkg\.tar\.zst(\.sig)?'" \
       | sed -E "s/.*'([^']+)'.*/\1/" \
@@ -97,29 +98,23 @@ __names() {
         done | sort -u
 }
 
-# Install/convert targets with a three-tier fallback per package:
-#   1. cachyos-v3 (priority in the default config)
-#   2. cachyos  (generic CachyOS x86_64 build) for anything whose v3 file 404s
-#   3. stock Arch [core]/[extra] for anything the generic repo lacks too
-# Retries to ride out transient CDN misses. Anything pulled from a lower tier
-# auto-upgrades to v3 on a later update once CachyOS publishes the file.
 prefer_v3() {
     local pkgs=("$@") try out m2 m3 keep p generic arch
     generic=$(mktemp); arch=$(mktemp)
     printf '[cachyos]\nInclude = /etc/pacman.d/cachyos-mirrorlist\n' > /etc/pacman.d/cachyos-generic.conf
-    sed 's#cachyos\.conf#cachyos-generic.conf#' /etc/pacman.conf > "$generic"   # v3 out, generic in
-    sed '/cachyos/d'                            /etc/pacman.conf > "$arch"      # all cachyos out
+    sed 's#cachyos\.conf#cachyos-generic.conf#' /etc/pacman.conf > "$generic"
+    sed '/cachyos/d'                            /etc/pacman.conf > "$arch"
 
     for try in 1 2 3 4 5; do
         [ "${#pkgs[@]}" -eq 0 ] && break
         out=$(pacman -S --noconfirm --ask=4 "${pkgs[@]}" 2>&1) && { rm -f "$generic" "$arch"; return 0; }
         printf '%s\n' "$out"
 
-        mapfile -t m2 < <(printf '%s\n' "$out" | __names)          # v3 404 -> generic
+        mapfile -t m2 < <(printf '%s\n' "$out" | __names)
         if [ "${#m2[@]}" -gt 0 ]; then
             printf 'prefer_v3: not in v3, trying cachyos generic: %s\n' "${m2[*]}"
             out=$(pacman -S --noconfirm --ask=4 --config "$generic" "${m2[@]}" 2>&1); printf '%s\n' "$out"
-            mapfile -t m3 < <(printf '%s\n' "$out" | __names)      # generic 404 too -> Arch
+            mapfile -t m3 < <(printf '%s\n' "$out" | __names)
             if [ "${#m3[@]}" -gt 0 ]; then
                 printf 'prefer_v3: not in cachyos generic either, taking from Arch: %s\n' "${m3[*]}"
                 pacman -S --noconfirm --ask=4 --config "$arch" "${m3[@]}" || true
@@ -140,6 +135,8 @@ prefer_v3() {
 pacman -Sy
 
 prefer_v3 "${ARCH[@]}"
+
+pacman -Rns --noconfirm linux-zen linux-zen-headers
 
 mapfile -t base < <(pacman -Qqn)
 prefer_v3 "${base[@]}"
@@ -164,7 +161,6 @@ aur_paru() {
 aur_paru -Sy --noconfirm --noprogressbar --removemake --skipreview --cleanafter --ask=4 --needed "${AUR[@]}"
 rc=$?
 
-# drop paru again if we added it
 [ "$had_paru" -eq 1 ] || pacman -Rns --noconfirm paru || true
 
 exit "$rc"
