@@ -8,8 +8,14 @@ __names() {
         done | sort -u
 }
 
+__conflicts() {
+    grep -oE "exists in both '[^']+' and '[^']+'" \
+      | sed -E "s/.*'([^']+)' and '([^']+)'/\2/" \
+      | sort -u
+}
+
 priority_v3() {
-    local pkgs=("$@") try out m2 m3 keep p generic arch
+    local pkgs=("$@") try out m2 m3 conf keep p generic arch
     generic=$(mktemp); arch=$(mktemp)
     printf '[cachyos]\nInclude = /etc/pacman.d/cachyos-mirrorlist\n' > /etc/pacman.d/cachyos-generic.conf
     sed 's#cachyos\.conf#cachyos-generic.conf#' /etc/pacman.conf > "$generic"
@@ -19,6 +25,16 @@ priority_v3() {
         [ "${#pkgs[@]}" -eq 0 ] && break
         out=$(pacman -S --noconfirm --ask=4 --overwrite '*' "${pkgs[@]}" 2>&1) && { rm -f "$generic" "$arch"; return 0; }
         printf '%s\n' "$out"
+
+        mapfile -t conf < <(printf '%s\n' "$out" | __conflicts)
+        if [ "${#conf[@]}" -gt 0 ]; then
+            printf 'priority_v3: dropping conflicting packages: %s\n' "${conf[*]}"
+            keep=()
+            for p in "${pkgs[@]}"; do
+                printf '%s\n' "${conf[@]}" | grep -qxF -- "$p" || keep+=("$p")
+            done
+            pkgs=("${keep[@]}")
+        fi
 
         mapfile -t m2 < <(printf '%s\n' "$out" | __names)
         if [ "${#m2[@]}" -gt 0 ]; then
