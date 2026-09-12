@@ -7,8 +7,8 @@ magick -size 1x1 xc:transparent /usr/share/plymouth/themes/spinner/watermark.png
 
 # GDM
 mkdir -p /etc/gdm-shell
-magick -size 1x1 xc:transparent /usr/share/pixmaps/archlinux-logo-text-dark.svg
-magick -size 1x1 xc:transparent /usr/share/icons/cachyos.svg
+printf '<svg xmlns="http://www.w3.org/2000/svg"/>' > /usr/share/pixmaps/archlinux-logo-text-dark.svg
+printf '<svg xmlns="http://www.w3.org/2000/svg"/>' > /usr/share/icons/cachyos.svg
 cp /usr/share/gnome-shell/gnome-shell-theme.gresource /etc/gdm-shell/gnome-shell-theme.gresource
 chmod u=rw,go=r /etc/gdm-shell/gnome-shell-theme.gresource
 cp /usr/share/gnome-shell/gnome-shell-theme.gresource /etc/gdm-shell/gnome-shell-theme.gresource.default
