@@ -21,6 +21,31 @@ pacman -U --noconfirm \
     "$BASE/$(pick cachyos-mirrorlist)" \
     "$BASE/$(pick cachyos-v3-mirrorlist)"
 
+rank_mirrorlist() {   # rank_mirrorlist <file> <repo> <archtoken> <archval>
+    local file=$1 repo=$2 archtoken=$3 archval=$4
+    local token="\$${archtoken}" url probe i=0 tmp
+    local -a urls
+    mapfile -t urls < <(sed -n 's/^Server = //p' "$file")
+    [ "${#urls[@]}" -eq 0 ] && return 0
+
+    tmp=$(mktemp -d)
+    for url in "${urls[@]}"; do
+        probe=${url//'$repo'/$repo}
+        probe=${probe//$token/$archval}
+        i=$((i + 1))
+        ( t=$(curl -fsS -o /dev/null -w '%{time_total}' --max-time 5 "$probe/$repo.db" 2>/dev/null) \
+              && printf '%s %s\n' "$t" "$url" > "$tmp/$i" ) &
+    done
+    wait
+
+    cat "$tmp"/* 2>/dev/null | sort -n | awk '{ $1=""; sub(/^ /,""); print "Server = " $0 }' > "$tmp/sorted"
+    [ -s "$tmp/sorted" ] && cat "$tmp/sorted" > "$file"
+    rm -rf "$tmp"
+}
+
+rank_mirrorlist /etc/pacman.d/cachyos-mirrorlist    cachyos    arch    x86_64
+rank_mirrorlist /etc/pacman.d/cachyos-v3-mirrorlist cachyos-v3 arch_v3 x86_64_v3
+
 curl -fsSL "$CONF" -o /etc/pacman.d/cachyos.conf
 
 [ -e /etc/pacman.conf.pacsave ] || cp -a /etc/pacman.conf /etc/pacman.conf.pacsave
