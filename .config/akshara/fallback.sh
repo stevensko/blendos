@@ -17,17 +17,17 @@ priority_v3() {
 
     for try in 1 2 3 4 5; do
         [ "${#pkgs[@]}" -eq 0 ] && break
-        out=$(pacman -S --noconfirm --ask=4 "${pkgs[@]}" 2>&1) && { rm -f "$generic" "$arch"; return 0; }
+        out=$(pacman -S --noconfirm --ask=4 --overwrite '*' "${pkgs[@]}" 2>&1) && { rm -f "$generic" "$arch"; return 0; }
         printf '%s\n' "$out"
 
         mapfile -t m2 < <(printf '%s\n' "$out" | __names)
         if [ "${#m2[@]}" -gt 0 ]; then
             printf 'priority_v3: not in v3, trying cachyos generic: %s\n' "${m2[*]}"
-            out=$(pacman -S --noconfirm --ask=4 --config "$generic" "${m2[@]}" 2>&1); printf '%s\n' "$out"
+            out=$(pacman -S --noconfirm --ask=4 --overwrite '*' --config "$generic" "${m2[@]}" 2>&1); printf '%s\n' "$out"
             mapfile -t m3 < <(printf '%s\n' "$out" | __names)
             if [ "${#m3[@]}" -gt 0 ]; then
                 printf 'priority_v3: not in cachyos generic either, taking from Arch: %s\n' "${m3[*]}"
-                pacman -S --noconfirm --ask=4 --config "$arch" "${m3[@]}" || true
+                pacman -S --noconfirm --ask=4 --overwrite '*' --config "$arch" "${m3[@]}" || true
             fi
             keep=()
             for p in "${pkgs[@]}"; do
