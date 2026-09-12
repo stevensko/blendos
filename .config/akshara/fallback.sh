@@ -15,7 +15,7 @@ __conflicts() {
 }
 
 priority_v3() {
-    local pkgs=("$@") try out m2 m3 conf keep p generic arch
+    local pkgs=("$@") try out rc m2 m3 conf keep p generic arch
     generic=$(mktemp); arch=$(mktemp)
     printf '[cachyos]\nInclude = /etc/pacman.d/cachyos-mirrorlist\n' > /etc/pacman.d/cachyos-generic.conf
     sed 's#cachyos\.conf#cachyos-generic.conf#' /etc/pacman.conf > "$generic"
@@ -23,8 +23,10 @@ priority_v3() {
 
     for try in 1 2 3 4 5; do
         [ "${#pkgs[@]}" -eq 0 ] && break
-        out=$(pacman -S --noconfirm --ask=4 --overwrite '*' "${pkgs[@]}" 2>&1) && { rm -f "$generic" "$arch"; return 0; }
+        out=$(pacman -S --noconfirm --ask=4 --overwrite '*' "${pkgs[@]}" 2>&1)
+        rc=$?
         printf '%s\n' "$out"
+        [ "$rc" -eq 0 ] && { rm -f "$generic" "$arch"; return 0; }
 
         mapfile -t conf < <(printf '%s\n' "$out" | __conflicts)
         if [ "${#conf[@]}" -gt 0 ]; then
