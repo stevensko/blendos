@@ -28,6 +28,8 @@ ARCH=(
   imagemagick
   imwheel
   iptables-nft
+  jellyfin-server
+  jellyfin-web
   keepass
   libinput-gestures
   libsecret
@@ -52,6 +54,7 @@ ARCH=(
   scx-tools
   sushi
   systemdgenie
+  toolbox
   ufw
   wireplumber
   xdg-desktop-portal-gnome
