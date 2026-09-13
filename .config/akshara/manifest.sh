@@ -2,14 +2,12 @@ ARCH=(
   adw-gtk-theme
   adwaita-icon-theme
   ananicy-cpp
-  aria2
   base-devel
   bluez-utils
   btrfs-assistant
   cachyos-ananicy-rules
   cachyos-settings
   clonezilla
-  distrobox
   dkms
   flatpak
   gdm
@@ -30,8 +28,6 @@ ARCH=(
   imagemagick
   imwheel
   iptables-nft
-  jellyfin-server
-  jellyfin-web
   keepass
   libinput-gestures
   libsecret
@@ -43,33 +39,23 @@ ARCH=(
   mission-center
   nautilus
   networkmanager
-  noto-fonts-emoji
   paru #build-only
   pipewire
   pipewire-pulse
   plymouth
-  procps-ng
   ptyxis
   python-setuptools
   python-six #rabbit-vcs
   qbittorrent
-  samba
-  scx-manager
+  scx-managerS
   scx-scheds
   scx-tools
   sushi
   systemdgenie
-  tailscale
-  toolbox
-  ttf-jetbrains-mono-nerd
   ufw
-  unzip
   wireplumber
-  wl-clipboard
-  wmctrl
   xdg-desktop-portal-gnome
   ydotool
-  zip
   zsh
 )
 
