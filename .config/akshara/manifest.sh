@@ -2,7 +2,6 @@ ARCH=(
   adw-gtk-theme
   adwaita-icon-theme
   ananicy-cpp
-  android-tools
   aria2
   base-devel
   bluez-utils
@@ -27,6 +26,7 @@ ARCH=(
   gpaste
   gufw
   gvfs
+  ifuse
   imagemagick
   imwheel
   iptables-nft
@@ -44,22 +44,20 @@ ARCH=(
   nautilus
   networkmanager
   noto-fonts-emoji
-  paru # build-only
+  paru #build-only
   pipewire
   pipewire-pulse
   plymouth
-  podman
   procps-ng
   ptyxis
   python-setuptools
+  python-six #rabbit-vcs
   qbittorrent
-  rclone
   samba
   scx-manager
   scx-scheds
   scx-tools
   sushi
-  syncthing
   systemdgenie
   tailscale
   toolbox
