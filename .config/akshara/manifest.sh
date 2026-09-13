@@ -67,9 +67,8 @@ ARCH=(
   wireplumber
   wl-clipboard
   wmctrl
-  xclip
   xdg-desktop-portal-gnome
-  xdotool
+  ydotool
   zip
   zsh
 )
