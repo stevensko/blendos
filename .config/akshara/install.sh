@@ -22,10 +22,13 @@ aur_paru() {
 pacman -Sy
 
 priority_v3 "${ARCH[@]}"
+arch_rc=$?
 
 aur_paru -Sy --noconfirm --noprogressbar --removemake --skipreview --cleanafter --ask=4 --needed "${AUR[@]}"
 rc=$?
 
 pacman -Rns --noconfirm linux-zen linux-zen-headers paru
+
+[ "$arch_rc" -eq 0 ] || rc=$arch_rc
 
 exit "$rc"

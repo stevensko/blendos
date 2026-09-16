@@ -49,7 +49,7 @@ ARCH=(
   python-setuptools
   python-six #rabbit-vcs
   qbittorrent
-  scx-managerS
+  scx-manager
   scx-scheds
   scx-tools
   sushi

@@ -14,8 +14,14 @@ __conflicts() {
       | sort -u
 }
 
+__missing() {
+    grep -oE "target not found: [^ ]+" \
+      | sed -E 's/^target not found: //' \
+      | sort -u
+}
+
 priority_v3() {
-    local pkgs=("$@") try out rc m2 m3 conf keep p generic arch
+    local pkgs=("$@") try out rc m2 m3 conf miss keep p generic arch
     generic=$(mktemp); arch=$(mktemp)
     printf '[cachyos]\nInclude = /etc/pacman.d/cachyos-mirrorlist\n' > /etc/pacman.d/cachyos-generic.conf
     sed 's#cachyos\.conf#cachyos-generic.conf#' /etc/pacman.conf > "$generic"
@@ -34,6 +40,16 @@ priority_v3() {
             keep=()
             for p in "${pkgs[@]}"; do
                 printf '%s\n' "${conf[@]}" | grep -qxF -- "$p" || keep+=("$p")
+            done
+            pkgs=("${keep[@]}")
+        fi
+
+        mapfile -t miss < <(printf '%s\n' "$out" | __missing)
+        if [ "${#miss[@]}" -gt 0 ]; then
+            printf 'priority_v3: dropping packages not found in any repo: %s\n' "${miss[*]}"
+            keep=()
+            for p in "${pkgs[@]}"; do
+                printf '%s\n' "${miss[@]}" | grep -qxF -- "$p" || keep+=("$p")
             done
             pkgs=("${keep[@]}")
         fi
