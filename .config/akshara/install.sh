@@ -27,8 +27,20 @@ arch_rc=$?
 aur_paru -Sy --noconfirm --noprogressbar --removemake --skipreview --cleanafter --ask=4 --needed "${AUR[@]}"
 rc=$?
 
+missing=()
+for p in "${ARCH[@]}" "${AUR[@]}"; do
+    pacman -Qq -- "$p" &>/dev/null || missing+=("$p")
+done
+
 pacman -Rns --noconfirm linux-zen linux-zen-headers paru
 
 [ "$arch_rc" -eq 0 ] || rc=$arch_rc
+
+if [ "${#missing[@]}" -gt 0 ]; then
+    printf 'install.sh: packages NOT installed: %s\n' "${missing[*]}"
+    rc=1
+else
+    printf 'install.sh: all requested packages installed\n'
+fi
 
 exit "$rc"
