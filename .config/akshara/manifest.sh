@@ -56,6 +56,7 @@ ARCH=(
   scx-tools
   sushi
   systemdgenie
+  tailscale
   toolbox
   ufw
   wireplumber
