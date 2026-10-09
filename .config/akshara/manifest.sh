@@ -44,6 +44,8 @@ ARCH=(
   paru #build-only
   pipewire
   pipewire-pulse
+  podman
+  podman-compose
   plymouth
   ptyxis
   python-setuptools
