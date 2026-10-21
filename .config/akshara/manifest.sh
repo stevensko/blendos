@@ -72,6 +72,7 @@ AUR=(
   input-remapper-bin
   jopdf
   nautilus-copy-path
+  nautilus-my-computer
   rabbitvcs-nautilus
   vscodium-insiders-bin
   xdg-terminal-exec
